@@ -37,7 +37,6 @@ function GearScore_GetScore(Name, Target)
 	    local PlayerClass, PlayerEnglishClass = UnitClass(Target);
 		local GearScore = 0; local PVPScore = 0; local ItemCount = 0; local LevelTotal = 0; local TempEquip = {}; local TempPVPScore = 0
 
-		-- Removed Titan's Grip logic - not relevant for TBC content
 		if ( GetInventoryItemLink(Target, 17) ) then
 			local ItemName, ItemLink, ItemRarity, ItemLevel, ItemMinLevel, ItemType, ItemSubType, ItemStackCount, ItemEquipLoc, ItemTexture = GetItemInfo(GetInventoryItemLink(Target, 17))
 			TempScore, ItemLevel = GearScore_GetItemScore(GetInventoryItemLink(Target, 17));
