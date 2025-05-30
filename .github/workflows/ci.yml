@@ -106,7 +106,7 @@ jobs:
         fi
         
         echo "✅ All Lua files have valid syntax"
-      - name: Validate TBC scoring system
+    - name: Validate TBC scoring system
       run: |
         echo "🔍 Validating TBC scoring system..."
         
