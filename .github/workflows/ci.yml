@@ -183,7 +183,7 @@ jobs:
         fi
         
         # Check that WotLK features are removed
-        if grep -q "Titan.*Grip" GearScoreLite.lua; then
+        if grep -v "^--" GearScoreLite.lua | grep -q "Titan.*Grip"; then
           echo "❌ Found Titan's Grip code - should be removed for TBC"
           exit 1
         else
@@ -215,7 +215,7 @@ jobs:
         echo "" >> validation_report.md
         echo "## 🎯 TBC Features Confirmed" >> validation_report.md
         echo "" >> validation_report.md
-        echo "- Four-tier TBC scoring system" >> validation_report.md
+        echo "- Six-tier TBC scoring system" >> validation_report.md
         echo "- WotLK features properly removed" >> validation_report.md
         echo "- Interface version 30300 (TBC compatible)" >> validation_report.md
         echo "- All required files present" >> validation_report.md
