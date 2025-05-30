@@ -87,8 +87,6 @@ jobs:
         CHANGELOG_CONTENT=$(cat TBC-CHANGELOG.txt)
 
         cat > release_notes.md << EOF
-        # GearScoreLite TBC Edition ${{ steps.version.outputs.version }}
-        
         **Release Date:** $RELEASE_DATE
         
         ## 🎯 What's New
