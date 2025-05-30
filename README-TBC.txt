@@ -8,14 +8,16 @@ This is a specialized version of GearScoreLite optimized specifically for TBC co
 
 WHAT'S FIXED:
 - TBC Best in Slot items now score appropriately instead of being undervalued
-- Three-tier scoring system for TBC content progression (T4/Heroic → T5/T6 → Sunwell)
+- Six-tier scoring system for TBC content progression phases
 - Removed WotLK-specific features not relevant to TBC gameplay
 
 SCORING TIERS:
-- TBC_LOW (85-99 ilvl): T4 raids, Heroic dungeons, Karazhan
-- TBC (100-133 ilvl): T5 raids (Serpentshrine, Tempest Keep)
-- TBC_T6 (120-140 ilvl): T6 raids (Black Temple, Mount Hyjal)
-- TBC_HIGH (141-151 ilvl): Sunwell Plateau, premium items
+- TBC_SUNWELL (154-164 ilvl): Phase 5: Sunwell Plateau T6.5
+- TBC_T6 (141-151 ilvl): Phase 3: Mount Hyjal, Black Temple T6
+- TBC_T5 (128-141 ilvl): Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear
+- TBC_T4 (110-120 ilvl): Phase 1: Karazhan, Gruul, Magtheridon T4
+- TBC_PRE_RAID (105-115 ilvl): Pre-Raid: Heroics, Crafted, Reputations
+- Formula "B" (<105 ilvl): Pre-TBC content
 
 USAGE:
 - Same commands as original: /gs, /gset, or /gearscore

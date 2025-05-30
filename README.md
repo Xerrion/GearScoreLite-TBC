@@ -16,26 +16,28 @@ The original GearScoreLite was designed for WotLK and used item level thresholds
 - T6 epics at ilvl 151 scored lower than mediocre WotLK greens
 
 ### ✅ **After (TBC Edition)**
-- **Four-tier progression system** designed specifically for TBC content
-- Proper scoring differentiation between T4 → T5 → T6 → Sunwell
+- **Six-tier progression system** designed specifically for TBC content
+- Proper scoring differentiation through all TBC phases: Pre-Raid → T4 → T5 → T6 → Sunwell → Pre-TBC
 - TBC BiS items now receive the high scores they deserve
 
 ## 📊 Scoring Tiers
 
 | Tier | Item Level | Content | Examples |
 |------|------------|---------|----------|
-| **TBC_LOW** | 85-99 | T4 raids, Heroic dungeons | Karazhan, Heroic dungeons, Badge gear |
-| **TBC** | 100-133 | T5 raids | Serpentshrine Cavern, Tempest Keep |
-| **TBC_T6** | 120-140 | T6 raids | Black Temple, Mount Hyjal |
-| **TBC_HIGH** | 141-151 | Sunwell Plateau | Sunwell raid, premium items |
+| **TBC_SUNWELL** | 154-164 | Phase 5: Sunwell Plateau T6.5 | Sunwell raid gear |
+| **TBC_T6** | 141-151 | Phase 3: Mount Hyjal, Black Temple T6 | T6 raid gear |  
+| **TBC_T5** | 128-141 | Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman | T5 raids, Zul'Aman, Badge gear |
+| **TBC_T4** | 110-120 | Phase 1: Karazhan, Gruul, Magtheridon T4 | T4 raid gear |
+| **TBC_PRE_RAID** | 105-115 | Pre-Raid: Heroics, Crafted, Reputations | Heroic dungeons, crafted items |
+| **Formula "B"** | <105 | Pre-TBC content | Leveling gear, vanilla content |
 
 ## 🏹 Example: Bristleblitz Striker Analysis
 
 **Bristleblitz Striker** (T6 BiS Bow, ilvl 151):
 
-- **Original System**: ~287 points (undervalued)
-- **TBC Edition**: ~478 points (proper T6 BiS score)
-- **Improvement**: **+67% score increase**
+- **Original System**: 52 GearScore, 276 HunterScore (undervalued)
+- **TBC Edition**: ~75 GearScore, ~400 HunterScore (proper T6 BiS score)
+- **Improvement**: **+44% GearScore, +45% HunterScore increase**
 
 ## 🚀 Installation
 
@@ -68,17 +70,23 @@ All original commands work exactly the same:
 
 ### New Formula System
 ```lua
--- Sunwell Plateau (ilvl 141-151)
-TBC_HIGH: A = 90.0, B = 0.4
+-- Phase 5: Sunwell Plateau T6.5 (ilvl 154-164)
+TBC_SUNWELL: A = 95.0, B = 0.35
 
--- T6 Content (ilvl 120-140) 
-TBC_T6: A = 75.0, B = 0.5
+-- Phase 3: Mount Hyjal, Black Temple T6 (ilvl 141-151)
+TBC_T6: A = 80.0, B = 0.45
 
--- T5 Content (ilvl 100-133)
-TBC: A = 65.0, B = 0.55
+-- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman (ilvl 128-141)
+TBC_T5: A = 70.0, B = 0.50
 
--- T4/Heroic Content (ilvl 85-99)
-TBC_LOW: A = 50.0, B = 0.7
+-- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+TBC_T4: A = 55.0, B = 0.65
+
+-- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
+TBC_PRE_RAID: A = 45.0, B = 0.80
+
+-- Pre-TBC Content (ilvl <105)
+Formula "B": A = 26.0, B = 1.2 (epics)
 ```
 
 ### Removed WotLK Features
@@ -106,10 +114,10 @@ Perfect for **TBC content servers** running on the **WotLK client architecture**
 
 | Item Type | Original Score | TBC Edition Score | Improvement |
 |-----------|----------------|-------------------|-------------|
-| Sunwell Epic (ilvl 151) | ~290 | ~480 | **+65%** |
-| T6 Epic (ilvl 130) | ~250 | ~380 | **+52%** |
-| T5 Epic (ilvl 115) | ~210 | ~310 | **+48%** |
-| T4 Epic (ilvl 95) | ~180 | ~230 | **+28%** |
+| Sunwell Epic (ilvl 151) | ~52 | ~88 | **+69%** |
+| T6 Epic (ilvl 130) | ~45 | ~75 | **+67%** |
+| T5 Epic (ilvl 115) | ~38 | ~62 | **+63%** |
+| T4 Epic (ilvl 95) | ~32 | ~48 | **+50%** |
 
 ## 👥 Credits
 
@@ -119,11 +127,11 @@ Perfect for **TBC content servers** running on the **WotLK client architecture**
 ## 📝 Changelog
 
 ### Version 4.0.1-TBC
-- ✨ **Complete TBC optimization** - Four-tier scoring system
+- ✨ **Complete TBC optimization** - Five-tier scoring system
 - 🔧 **Fixed TBC BiS scoring** - No more undervalued items  
 - 🚫 **Removed WotLK features** - Titan's Grip, WotLK thresholds
-- 📊 **Accurate item level ranges** - T5 (100-133), T6 (120-151)
-- 🎯 **TBC-specific formulas** - Optimized coefficients
+- 📊 **Accurate item level ranges** - T5 (100-119), T6 (120-140), Sunwell (141+)
+- 🎯 **TBC-specific formulas** - Optimized coefficients for all TBC tiers
 - 📚 **Updated documentation** - Complete usage guide
 
 ## 🐛 Issues & Support

@@ -106,37 +106,79 @@ jobs:
         fi
         
         echo "✅ All Lua files have valid syntax"
-        
-    - name: Validate TBC scoring system
+      - name: Validate TBC scoring system
       run: |
         echo "🔍 Validating TBC scoring system..."
         
-        # Check that TBC-specific formulas exist
-        if grep -q "TBC_HIGH" informationLite.lua; then
-          echo "✓ Found TBC_HIGH formula (Sunwell)"
+        # Check that TBC-specific formulas exist (6-tier system)
+        if grep -q "TBC_SUNWELL" informationLite.lua; then
+          echo "✓ Found TBC_SUNWELL formula (Sunwell Plateau T6.5)"
         else
-          echo "❌ Missing TBC_HIGH formula"
+          echo "❌ Missing TBC_SUNWELL formula"
           exit 1
         fi
         
         if grep -q "TBC_T6" informationLite.lua; then
-          echo "✓ Found TBC_T6 formula (T6 raids)"
+          echo "✓ Found TBC_T6 formula (Mount Hyjal, Black Temple T6)"
         else
           echo "❌ Missing TBC_T6 formula"
           exit 1
         fi
         
-        if grep -q "TBC\[" informationLite.lua; then
-          echo "✓ Found TBC formula (T5 raids)"
+        if grep -q "TBC_T5" informationLite.lua; then
+          echo "✓ Found TBC_T5 formula (SSC, TK T5 + Zul'Aman)"
         else
-          echo "❌ Missing TBC formula"
+          echo "❌ Missing TBC_T5 formula"
           exit 1
         fi
         
-        if grep -q "TBC_LOW" informationLite.lua; then
-          echo "✓ Found TBC_LOW formula (T4/Heroics)"
+        if grep -q "TBC_T4" informationLite.lua; then
+          echo "✓ Found TBC_T4 formula (Karazhan, Gruul, Magtheridon T4)"
         else
-          echo "❌ Missing TBC_LOW formula"
+          echo "❌ Missing TBC_T4 formula"
+          exit 1
+        fi
+        
+        if grep -q "TBC_PRE_RAID" informationLite.lua; then
+          echo "✓ Found TBC_PRE_RAID formula (Heroics, Crafted, Reputations)"
+        else
+          echo "❌ Missing TBC_PRE_RAID formula"
+          exit 1
+        fi
+        
+        # Check that proper item level thresholds exist in scoring logic
+        if grep -q "ItemLevel >= 154" GearScoreLite.lua; then
+          echo "✓ Found Sunwell threshold (ilvl 154+)"
+        else
+          echo "❌ Missing Sunwell threshold (ilvl 154+)"
+          exit 1
+        fi
+        
+        if grep -q "ItemLevel >= 141" GearScoreLite.lua; then
+          echo "✓ Found T6 threshold (ilvl 141+)"
+        else
+          echo "❌ Missing T6 threshold (ilvl 141+)"
+          exit 1
+        fi
+        
+        if grep -q "ItemLevel >= 128" GearScoreLite.lua; then
+          echo "✓ Found T5 threshold (ilvl 128+)"
+        else
+          echo "❌ Missing T5 threshold (ilvl 128+)"
+          exit 1
+        fi
+        
+        if grep -q "ItemLevel >= 110" GearScoreLite.lua; then
+          echo "✓ Found T4 threshold (ilvl 110+)"
+        else
+          echo "❌ Missing T4 threshold (ilvl 110+)"
+          exit 1
+        fi
+        
+        if grep -q "ItemLevel >= 105" GearScoreLite.lua; then
+          echo "✓ Found Pre-Raid threshold (ilvl 105+)"
+        else
+          echo "❌ Missing Pre-Raid threshold (ilvl 105+)"
           exit 1
         fi
         

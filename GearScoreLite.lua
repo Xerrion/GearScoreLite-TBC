@@ -97,20 +97,22 @@ function GearScore_GetItemScore(ItemLink)
  	if ( ItemRarity == 5 ) then QualityScale = 1.3; ItemRarity = 4;
 	elseif ( ItemRarity == 1 ) then QualityScale = 0.005;  ItemRarity = 2
 	elseif ( ItemRarity == 0 ) then QualityScale = 0.005;  ItemRarity = 2 end
-    if ( ItemRarity == 7 ) then ItemRarity = 3; ItemLevel = 187.05; end    if ( GS_ItemTypes[ItemEquipLoc] ) then
-        -- TBC-optimized scoring logic - designed specifically for TBC content
-        if ( ItemLevel >= 141 ) then 
-            -- Sunwell & highest T6 items (ilvl 141-151)
-            Table = GS_Formula["TBC_HIGH"]
-        elseif ( ItemLevel >= 120 ) then
-            -- T6 items (ilvl 120-140)
+    if ( ItemRarity == 7 ) then ItemRarity = 3; ItemLevel = 187.05; end    if ( GS_ItemTypes[ItemEquipLoc] ) then        -- TBC-optimized scoring logic - designed specifically for TBC content
+        if ( ItemLevel >= 154 ) then 
+            -- Phase 5: Sunwell Plateau T6.5 (ilvl 154-164)
+            Table = GS_Formula["TBC_SUNWELL"]
+        elseif ( ItemLevel >= 141 ) then
+            -- Phase 3: Mount Hyjal, Black Temple T6 (ilvl 141-151)
             Table = GS_Formula["TBC_T6"]
-        elseif ( ItemLevel >= 100 ) then
-            -- T5 items (ilvl 100-133)
-            Table = GS_Formula["TBC"]
-        elseif ( ItemLevel >= 85 ) then
-            -- T4 & Heroic items (ilvl 85-99) 
-            Table = GS_Formula["TBC_LOW"]
+        elseif ( ItemLevel >= 128 ) then
+            -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear (ilvl 128-141)
+            Table = GS_Formula["TBC_T5"]
+        elseif ( ItemLevel >= 110 ) then
+            -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+            Table = GS_Formula["TBC_T4"]
+        elseif ( ItemLevel >= 105 ) then
+            -- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
+            Table = GS_Formula["TBC_PRE_RAID"]
         else 
             -- Pre-TBC items use basic formula
             Table = GS_Formula["B"] 
