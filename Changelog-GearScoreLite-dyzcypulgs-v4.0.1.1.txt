@@ -1,0 +1,12 @@
+tag v4.0.1.1
+36baef799fe7bb4108e6090887c0d54c08d39b33
+dyzcypul <dyzcypul@gmail.com>
+2010-10-17 12:50:57 -0600
+
+Tagging as v4.0.1.1
+
+
+--------------------
+
+dyzcypul:
+	- attempt to the fix throttling by making it necessary to target
