@@ -1,4 +1,7 @@
 name: Create Release
+permissions:
+  contents: write
+  packages: write
 
 on:
   push:
@@ -14,9 +17,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
+   
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
