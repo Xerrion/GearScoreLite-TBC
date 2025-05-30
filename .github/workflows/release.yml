@@ -14,6 +14,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -77,26 +79,44 @@ jobs:
     - name: Generate release notes
       id: release_notes
       run: |
-        cat > release_notes.md << 'EOF'
+        # Get current date for release notes
+        RELEASE_DATE=$(date +'%B %d, %Y')
+
+        # Dynamically read TBC-CHANGELOG.txt for recent changes
+        CHANGELOG_CONTENT=$(cat TBC-CHANGELOG.txt)
+
+        cat > release_notes.md << EOF
         # GearScoreLite TBC Edition ${{ steps.version.outputs.version }}
+        
+        **Release Date:** $RELEASE_DATE
         
         ## 🎯 What's New
         
-        A specialized version of GearScoreLite optimized for **The Burning Crusade (TBC) content** running on WotLK client (3.3.5a).
+        A specialized version of GearScoreLite optimized for **The Burning Crusade (TBC) content** running on WotLK client (3.3.5a). This release incorporates the latest updates and fixes.
         
         ### ✨ Key Features
-        - **TBC-optimized scoring system** with four-tier progression
+        - **Six-tier TBC scoring system** for accurate phase progression
         - **Fixed TBC BiS scoring** - No more undervalued items
-        - **67% score improvement** for Sunwell items (e.g., Bristleblitz Striker)
-        - **Proper tier progression** T4 → T5 → T6 → Sunwell
+        - **Significant score improvement** for all TBC items based on their tier
+        - **Proper tier progression**: Pre-Raid → T4 → T5 → T6 → Sunwell → Pre-TBC
         
-        ### 📊 Scoring Tiers
-        | Tier | Item Level | Content |
-        |------|------------|---------|
-        | TBC_HIGH | 141-151 | Sunwell Plateau |
-        | TBC_T6 | 120-140 | Black Temple, Mount Hyjal |
-        | TBC | 100-133 | Serpentshrine Cavern, Tempest Keep |
-        | TBC_LOW | 85-99 | Karazhan, Heroic dungeons |
+        ### 📊 Scoring Tiers (ilvl ranges)
+        | Tier             | Item Level | Content Examples                               |
+        |------------------|------------|------------------------------------------------|
+        | **TBC_SUNWELL**  | 154-164    | Phase 5: Sunwell Plateau T6.5                  |
+        | **TBC_T6**       | 141-151    | Phase 3: Mount Hyjal, Black Temple T6          |  
+        | **TBC_T5**       | 128-141    | Phase 2: SSC, TK T5 + Phase 4: Zul\'Aman       |
+        | **TBC_T4**       | 110-120    | Phase 1: Karazhan, Gruul, Magtheridon T4       |
+        | **TBC_PRE_RAID** | 105-115    | Pre-Raid: Heroics, Crafted, Reputations        |
+        | **Formula "B"**  | <105       | Pre-TBC content (Leveling, Vanilla)            |
+
+        ---
+        ## 📜 Changelog Highlights
+        
+        \'\'\'markdown
+        $CHANGELOG_CONTENT
+        \'\'\'
+        ---
         
         ## 📥 Installation
         
@@ -116,7 +136,7 @@ jobs:
         
         - **Client**: WoW 3.3.5a (WotLK client)
         - **Content**: TBC expansion servers
-        - **Interface**: 30300
+        - **Interface**: 30300 (Set in GearScoreLite.toc)
         
         ---
         
