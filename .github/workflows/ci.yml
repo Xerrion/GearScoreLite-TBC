@@ -181,6 +181,7 @@ jobs:
           echo "❌ Missing Pre-Raid threshold (ilvl 105+)"
           exit 1
         fi
+
         
         echo "✅ TBC scoring system validation passed"
         

@@ -1,7 +1,7 @@
 GearScoreLite TBC Edition - Changelog
 ======================================
 
-Version 4.0.1-TBC (TBC Adaptation by Xerrion)
+Version 4.0.2-TBC (TBC Adaptation by Xerrion)
 ----------------------------------------------
 Original Authors: Mirrikat45, dyzcypul
 TBC Adaptation: Xerrion
