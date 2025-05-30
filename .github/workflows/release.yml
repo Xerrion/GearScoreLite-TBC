@@ -1,0 +1,148 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v4.0.2-TBC)'
+        required: true
+        default: 'v4.0.2-TBC'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract version from tag or input
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/}
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "version_clean=${VERSION#v}" >> $GITHUB_OUTPUT
+        
+    - name: Validate addon files
+      run: |
+        # Check that required files exist
+        required_files=(
+          "GearScoreLite.lua"
+          "GearScoreLite.toc"
+          "informationLite.lua"
+          "README.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "Error: Required file $file not found"
+            exit 1
+          fi
+        done
+        
+        echo "All required addon files found ✓"
+        
+    - name: Update TOC version
+      run: |
+        VERSION_CLEAN="${{ steps.version.outputs.version_clean }}"
+        sed -i "s/## Version: .*/## Version: ${VERSION_CLEAN}/" GearScoreLite.toc
+        echo "Updated TOC version to ${VERSION_CLEAN}"
+        
+    - name: Create addon package
+      run: |
+        # Create release directory structure
+        mkdir -p release/GearScoreLite
+        
+        # Copy addon files
+        cp *.lua release/GearScoreLite/
+        cp *.toc release/GearScoreLite/
+        cp README.md release/GearScoreLite/
+        cp README-TBC.txt release/GearScoreLite/
+        cp TBC-CHANGELOG.txt release/GearScoreLite/
+        
+        # Create addon zip
+        cd release
+        zip -r "../GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}.zip" GearScoreLite/
+        cd ..
+        
+        echo "Created addon package: GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}.zip"
+        
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << 'EOF'
+        # GearScoreLite TBC Edition ${{ steps.version.outputs.version }}
+        
+        ## 🎯 What's New
+        
+        A specialized version of GearScoreLite optimized for **The Burning Crusade (TBC) content** running on WotLK client (3.3.5a).
+        
+        ### ✨ Key Features
+        - **TBC-optimized scoring system** with four-tier progression
+        - **Fixed TBC BiS scoring** - No more undervalued items
+        - **67% score improvement** for Sunwell items (e.g., Bristleblitz Striker)
+        - **Proper tier progression** T4 → T5 → T6 → Sunwell
+        
+        ### 📊 Scoring Tiers
+        | Tier | Item Level | Content |
+        |------|------------|---------|
+        | TBC_HIGH | 141-151 | Sunwell Plateau |
+        | TBC_T6 | 120-140 | Black Temple, Mount Hyjal |
+        | TBC | 100-133 | Serpentshrine Cavern, Tempest Keep |
+        | TBC_LOW | 85-99 | Karazhan, Heroic dungeons |
+        
+        ## 📥 Installation
+        
+        1. **Download** `GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}.zip`
+        2. **Extract** to your `Interface/AddOns/` folder
+        3. **Restart** WoW client
+        4. **Enjoy** properly scored TBC gear!
+        
+        ## 🎮 Usage
+        
+        All original commands work:
+        - `/gs` - Show options menu
+        - `/gs player` - Toggle player score display
+        - `/gs item` - Toggle item tooltips
+        
+        ## 🔧 Compatibility
+        
+        - **Client**: WoW 3.3.5a (WotLK client)
+        - **Content**: TBC expansion servers
+        - **Interface**: 30300
+        
+        ---
+        
+        ### 👥 Credits
+        - **Original Authors**: Mirrikat45, dyzcypul
+        - **TBC Adaptation**: Xerrion
+        EOF
+        
+        echo "Generated release notes"
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: GearScoreLite TBC Edition ${{ steps.version.outputs.version }}
+        body_path: release_notes.md
+        files: |
+          GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upload addon as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}
+        path: release/GearScoreLite/
+        retention-days: 90

@@ -1,0 +1,179 @@
+name: CI - Validate Addon
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate addon structure
+      run: |
+        echo "🔍 Validating GearScoreLite TBC Edition structure..."
+        
+        # Check required files exist
+        required_files=(
+          "GearScoreLite.lua"
+          "GearScoreLite.toc"
+          "informationLite.lua"
+          "README.md"
+        )
+        
+        missing_files=()
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            missing_files+=("$file")
+          else
+            echo "✓ Found: $file"
+          fi
+        done
+        
+        if [ ${#missing_files[@]} -ne 0 ]; then
+          echo "❌ Missing required files:"
+          printf '  - %s\n' "${missing_files[@]}"
+          exit 1
+        fi
+        
+        echo "✅ All required files present"
+        
+    - name: Validate TOC file
+      run: |
+        echo "🔍 Validating GearScoreLite.toc..."
+        
+        # Check TOC has required fields
+        required_fields=(
+          "Interface"
+          "Title"
+          "Version"
+          "Author"
+        )
+        
+        for field in "${required_fields[@]}"; do
+          if grep -q "## $field:" GearScoreLite.toc; then
+            echo "✓ Found TOC field: $field"
+          else
+            echo "❌ Missing TOC field: $field"
+            exit 1
+          fi
+        done
+        
+        # Check Interface version is 30300 (TBC compatible)
+        if grep -q "## Interface: 30300" GearScoreLite.toc; then
+          echo "✓ Interface version is TBC compatible (30300)"
+        else
+          echo "❌ Interface version should be 30300 for TBC compatibility"
+          exit 1
+        fi
+        
+        echo "✅ TOC file validation passed"
+        
+    - name: Validate Lua syntax
+      run: |
+        echo "🔍 Validating Lua syntax..."
+        
+        # Install Lua for syntax checking
+        sudo apt-get update
+        sudo apt-get install -y lua5.1
+        
+        lua_files=($(find . -name "*.lua" -type f))
+        
+        for file in "${lua_files[@]}"; do
+          echo "Checking syntax: $file"
+          if lua5.1 -l "$file" 2>/dev/null; then
+            echo "✓ Syntax OK: $file"
+          else
+            echo "❌ Syntax error in: $file"
+            lua5.1 -l "$file"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All Lua files have valid syntax"
+        
+    - name: Validate TBC scoring system
+      run: |
+        echo "🔍 Validating TBC scoring system..."
+        
+        # Check that TBC-specific formulas exist
+        if grep -q "TBC_HIGH" informationLite.lua; then
+          echo "✓ Found TBC_HIGH formula (Sunwell)"
+        else
+          echo "❌ Missing TBC_HIGH formula"
+          exit 1
+        fi
+        
+        if grep -q "TBC_T6" informationLite.lua; then
+          echo "✓ Found TBC_T6 formula (T6 raids)"
+        else
+          echo "❌ Missing TBC_T6 formula"
+          exit 1
+        fi
+        
+        if grep -q "TBC\[" informationLite.lua; then
+          echo "✓ Found TBC formula (T5 raids)"
+        else
+          echo "❌ Missing TBC formula"
+          exit 1
+        fi
+        
+        if grep -q "TBC_LOW" informationLite.lua; then
+          echo "✓ Found TBC_LOW formula (T4/Heroics)"
+        else
+          echo "❌ Missing TBC_LOW formula"
+          exit 1
+        fi
+        
+        # Check that WotLK features are removed
+        if grep -q "Titan.*Grip" GearScoreLite.lua; then
+          echo "❌ Found Titan's Grip code - should be removed for TBC"
+          exit 1
+        else
+          echo "✓ Titan's Grip code properly removed"
+        fi
+        
+        echo "✅ TBC scoring system validation passed"
+        
+    - name: Generate test report
+      run: |
+        echo "📊 Generating validation report..."
+        
+        cat > validation_report.md << 'EOF'
+        # GearScoreLite TBC Edition - Validation Report
+        
+        ## ✅ Validation Results
+        
+        - **Addon Structure**: ✅ Pass
+        - **TOC File**: ✅ Pass  
+        - **Lua Syntax**: ✅ Pass
+        - **TBC Scoring System**: ✅ Pass
+        
+        ## 📁 Files Validated
+        
+        EOF
+        
+        find . -name "*.lua" -o -name "*.toc" -o -name "*.md" | sort >> validation_report.md
+        
+        echo "" >> validation_report.md
+        echo "## 🎯 TBC Features Confirmed" >> validation_report.md
+        echo "" >> validation_report.md
+        echo "- Four-tier TBC scoring system" >> validation_report.md
+        echo "- WotLK features properly removed" >> validation_report.md
+        echo "- Interface version 30300 (TBC compatible)" >> validation_report.md
+        echo "- All required files present" >> validation_report.md
+        
+        cat validation_report.md
+        
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: validation-report
+        path: validation_report.md
+        retention-days: 30

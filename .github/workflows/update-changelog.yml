@@ -1,0 +1,100 @@
+name: Update Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 4.0.2-TBC)'
+        required: true
+      changes:
+        description: 'Changes description'
+        required: true
+        default: 'Bug fixes and improvements'
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Update TBC Changelog
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        CHANGES="${{ github.event.inputs.changes }}"
+        DATE=$(date '+%Y-%m-%d')
+        
+        # Create temporary file with new entry
+        cat > temp_changelog.txt << EOF
+        ================================================================================
+        GearScoreLite TBC Edition - Version ${VERSION}
+        Released: ${DATE}
+        ================================================================================
+        
+        ${CHANGES}
+        
+        EOF
+        
+        # Prepend to existing changelog
+        if [ -f "TBC-CHANGELOG.txt" ]; then
+          cat TBC-CHANGELOG.txt >> temp_changelog.txt
+        fi
+        
+        mv temp_changelog.txt TBC-CHANGELOG.txt
+        
+        echo "Updated TBC-CHANGELOG.txt with version ${VERSION}"
+        
+    - name: Update README version badges
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        
+        # Update version badge in README.md
+        sed -i "s/version-[^-]*-TBC-blue/version-${VERSION}-blue/" README.md
+        
+        echo "Updated README.md version badge to ${VERSION}"
+        
+    - name: Update TOC version
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        
+        # Update TOC file version
+        sed -i "s/## Version: .*/## Version: ${VERSION}/" GearScoreLite.toc
+        
+        echo "Updated GearScoreLite.toc version to ${VERSION}"
+        
+    - name: Commit changes
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        git add TBC-CHANGELOG.txt README.md GearScoreLite.toc
+        git commit -m "chore: update changelog and version to ${VERSION}"
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: update changelog and version to ${{ github.event.inputs.version }}"
+        title: "📝 Update changelog for v${{ github.event.inputs.version }}"
+        body: |
+          ## Changelog Update
+          
+          **Version**: ${{ github.event.inputs.version }}
+          **Changes**: ${{ github.event.inputs.changes }}
+          
+          This PR updates:
+          - ✅ TBC-CHANGELOG.txt with new version entry
+          - ✅ README.md version badge
+          - ✅ GearScoreLite.toc version field
+          
+          ### Files Modified
+          - `TBC-CHANGELOG.txt`
+          - `README.md` 
+          - `GearScoreLite.toc`
+          
+          Ready for review and merge before creating release tag.
+        branch: update-changelog-${{ github.event.inputs.version }}
+        delete-branch: true
