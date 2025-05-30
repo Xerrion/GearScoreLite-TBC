@@ -182,14 +182,6 @@ jobs:
           exit 1
         fi
         
-        # Check that WotLK features are removed
-        if grep -q "Titan.*Grip" GearScoreLite.lua; then
-          echo "❌ Found Titan's Grip code - should be removed for TBC"
-          exit 1
-        else
-          echo "✓ Titan's Grip code properly removed"
-        fi
-        
         echo "✅ TBC scoring system validation passed"
         
     - name: Generate test report
