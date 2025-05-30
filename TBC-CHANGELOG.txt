@@ -1,6 +1,26 @@
 GearScoreLite TBC Edition - Changelog
 ======================================
 
+Version 4.0.3-TBC (May 2025 - Pure TBC Cleanup)
+------------------------------------------------
+CLEANUP & OPTIMIZATION RELEASE:
+- ✅ REMOVED: All heirloom calculations and WotLK-era item handling
+  * Eliminated ItemRarity == 7 (heirloom) processing entirely
+  * Removed ItemLevel == 187.05 heirloom level reset conditions
+  * Pure TBC itemization without WotLK interference
+- ✅ SYNCHRONIZED: All scoring systems across codebase
+  * Updated GearScoreLite_SyntaxCheck.lua to match 6-tier system
+  * Eliminated old 4-tier formulas (TBC_HIGH, TBC, TBC_LOW)
+  * Consistent TBC_SUNWELL→TBC_T6→TBC_T5→TBC_T4→TBC_PRE_RAID→Formula "B"
+- ✅ FILE STRUCTURE: Cleaned non-essential WotLK-era files
+  * Removed legacy DKP, tooltip, and version checking systems
+  * Streamlined to pure TBC-focused addon structure
+  * Simplified special users list from 100+ entries to minimal TBC types
+- ✅ CODE QUALITY: Verified removal of all WotLK-specific features
+  * Confirmed Titan's Grip penalties properly removed
+  * No death knight or WotLK class-specific logic remaining
+  * Clean codebase focused purely on TBC content
+
 Version 4.0.2-TBC (TBC Adaptation by Xerrion)
 ----------------------------------------------
 Original Authors: Mirrikat45, dyzcypul

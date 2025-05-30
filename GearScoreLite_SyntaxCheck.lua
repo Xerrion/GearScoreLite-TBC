@@ -32,30 +32,37 @@ GS_DefaultSettings = {
 }
 
 GS_Formula = {
-    ["TBC_HIGH"] = {
-        [2] = { A = 73, B = 1.8 },
-        [3] = { A = 81, B = 1.3 },
-        [4] = { A = 91, B = 1.0 }
+    -- TBC-specific formulas optimized for TBC itemization
+    ["TBC_SUNWELL"] = {
+        [4] = { ["A"] = 95.0000, ["B"] = 0.3500 }, -- Phase 5: Sunwell Plateau T6.5 (ilvl 154-164)
+        [3] = { ["A"] = 85.0000, ["B"] = 0.5000 },
+        [2] = { ["A"] = 75.0000, ["B"] = 0.6500 }
     },
     ["TBC_T6"] = {
-        [2] = { A = 73, B = 1.8 },
-        [3] = { A = 81, B = 1.3 },
-        [4] = { A = 91, B = 1.0 }
+        [4] = { ["A"] = 80.0000, ["B"] = 0.4500 }, -- Phase 3: Mount Hyjal, Black Temple T6 (ilvl 141-151)
+        [3] = { ["A"] = 70.0000, ["B"] = 0.6000 },
+        [2] = { ["A"] = 60.0000, ["B"] = 0.7500 }
     },
-    ["TBC"] = {
-        [2] = { A = 73, B = 1.8 },
-        [3] = { A = 81, B = 1.3 },
-        [4] = { A = 91, B = 1.0 }
+    ["TBC_T5"] = {
+        [4] = { ["A"] = 70.0000, ["B"] = 0.5000 }, -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear (ilvl 128-141)
+        [3] = { ["A"] = 60.0000, ["B"] = 0.6500 },
+        [2] = { ["A"] = 50.0000, ["B"] = 0.8000 }
     },
-    ["TBC_LOW"] = {
-        [2] = { A = 73, B = 1.8 },
-        [3] = { A = 81, B = 1.3 },
-        [4] = { A = 91, B = 1.0 }
+    ["TBC_T4"] = {
+        [4] = { ["A"] = 55.0000, ["B"] = 0.6500 }, -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+        [3] = { ["A"] = 45.0000, ["B"] = 0.8000 },
+        [2] = { ["A"] = 35.0000, ["B"] = 0.9500 }
+    },
+    ["TBC_PRE_RAID"] = {
+        [4] = { ["A"] = 45.0000, ["B"] = 0.8000 }, -- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
+        [3] = { ["A"] = 35.0000, ["B"] = 1.0000 },
+        [2] = { ["A"] = 25.0000, ["B"] = 1.2000 }
     },
     ["B"] = {
-        [2] = { A = 73, B = 1.8 },
-        [3] = { A = 81, B = 1.3 },
-        [4] = { A = 91, B = 1.0 }
+        [4] = { ["A"] = 26.0000, ["B"] = 1.2000 },
+        [3] = { ["A"] = 0.7500, ["B"] = 1.8000 },
+        [2] = { ["A"] = 8.0000, ["B"] = 2.0000 },
+        [1] = { ["A"] = 0.0000, ["B"] = 2.2500 }
     }
 }
 
@@ -189,29 +196,34 @@ end
 function GearScore_GetItemScore(ItemLink)
 	local QualityScale = 1; local PVPScale = 1; local PVPScore = 0; local GearScore = 0
 	if not ( ItemLink ) then return 0, 0; end
-	local ItemName, ItemLink, ItemRarity, ItemLevel, ItemMinLevel, ItemType, ItemSubType, ItemStackCount, ItemEquipLoc, ItemTexture = GetItemInfo(ItemLink); local Table = {}; local Scale = 1.8618
+    local ItemName, ItemLink, ItemRarity, ItemLevel, ItemMinLevel, ItemType, ItemSubType, ItemStackCount, ItemEquipLoc, ItemTexture = GetItemInfo(ItemLink); local Table = {}; local Scale = 1.8618
  	if ( ItemRarity == 5 ) then QualityScale = 1.3; ItemRarity = 4;
 	elseif ( ItemRarity == 1 ) then QualityScale = 0.005;  ItemRarity = 2
 	elseif ( ItemRarity == 0 ) then QualityScale = 0.005;  ItemRarity = 2 end
-    if ( ItemRarity == 7 ) then ItemRarity = 3; ItemLevel = 187.05; end    
-    
-    if ( GS_ItemTypes[ItemEquipLoc] ) then
-        if ( ItemLevel >= 141 ) then 
-            Table = GS_Formula["TBC_HIGH"]
-        elseif ( ItemLevel >= 120 ) then
+      if ( GS_ItemTypes[ItemEquipLoc] ) then
+        -- TBC-optimized scoring logic - designed specifically for TBC content
+        if ( ItemLevel >= 154 ) then 
+            -- Phase 5: Sunwell Plateau T6.5 (ilvl 154-164)
+            Table = GS_Formula["TBC_SUNWELL"]
+        elseif ( ItemLevel >= 141 ) then
+            -- Phase 3: Mount Hyjal, Black Temple T6 (ilvl 141-151)
             Table = GS_Formula["TBC_T6"]
-        elseif ( ItemLevel >= 100 ) then
-            Table = GS_Formula["TBC"]
-        elseif ( ItemLevel >= 85 ) then
-            Table = GS_Formula["TBC_LOW"]
-        else 
-            Table = GS_Formula["B"] 
+        elseif ( ItemLevel >= 128 ) then
+            -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear (ilvl 128-141)
+            Table = GS_Formula["TBC_T5"]
+        elseif ( ItemLevel >= 110 ) then
+            -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+            Table = GS_Formula["TBC_T4"]
+        elseif ( ItemLevel >= 105 ) then
+            -- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
+            Table = GS_Formula["TBC_PRE_RAID"]
+        else
+            -- Pre-TBC items use basic formula
+            Table = GS_Formula["B"]
         end
-        
-		if ( ItemRarity >= 2 ) and ( ItemRarity <= 4 )then
+        		if ( ItemRarity >= 2 ) and ( ItemRarity <= 4 )then
             local Red, Green, Blue = GearScore_GetQuality((floor(((ItemLevel - Table[ItemRarity].A) / Table[ItemRarity].B) * 1 * Scale)) * 11.25 )
             GearScore = floor(((ItemLevel - Table[ItemRarity].A) / Table[ItemRarity].B) * GS_ItemTypes[ItemEquipLoc].SlotMOD * Scale * QualityScale)
-			if ( ItemLevel == 187.05 ) then ItemLevel = 0; end
 			if ( GearScore < 0 ) then GearScore = 0;   Red, Green, Blue = GearScore_GetQuality(1); end
 			if ( PVPScale == 0.75 ) then PVPScore = 1; GearScore = GearScore * 1; 
 			else PVPScore = GearScore * 0; end

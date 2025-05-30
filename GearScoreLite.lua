@@ -12,7 +12,6 @@
 --Added three-tier TBC scoring system: TBC_LOW (T4/Heroic), TBC (T5/T6), TBC_HIGH (Sunwell)
 --Fixed TBC BiS items being scored lower than inferior items
 --Removed WotLK-specific logic and titan grip penalties for pure TBC experience
-
 ------------------------------------------------------------------------------
 
 function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_Whisper, GS_Sender)
@@ -91,12 +90,13 @@ end
 ------------------------------ Get Item Score ---------------------------------
 function GearScore_GetItemScore(ItemLink)
 	local QualityScale = 1; local PVPScale = 1; local PVPScore = 0; local GearScore = 0
-	if not ( ItemLink ) then return 0, 0; end
-	local ItemName, ItemLink, ItemRarity, ItemLevel, ItemMinLevel, ItemType, ItemSubType, ItemStackCount, ItemEquipLoc, ItemTexture = GetItemInfo(ItemLink); local Table = {}; local Scale = 1.8618
+	if not ( ItemLink ) then return 0, 0; end	local ItemName, ItemLink, ItemRarity, ItemLevel, ItemMinLevel, ItemType, ItemSubType, ItemStackCount, ItemEquipLoc, ItemTexture = GetItemInfo(ItemLink); local Table = {}; local Scale = 1.8618
  	if ( ItemRarity == 5 ) then QualityScale = 1.3; ItemRarity = 4;
 	elseif ( ItemRarity == 1 ) then QualityScale = 0.005;  ItemRarity = 2
 	elseif ( ItemRarity == 0 ) then QualityScale = 0.005;  ItemRarity = 2 end
-    if ( ItemRarity == 7 ) then ItemRarity = 3; ItemLevel = 187.05; end    if ( GS_ItemTypes[ItemEquipLoc] ) then        -- TBC-optimized scoring logic - designed specifically for TBC content
+    
+    if ( GS_ItemTypes[ItemEquipLoc] ) then        
+        -- TBC-optimized scoring logic - designed specifically for TBC content
         if ( ItemLevel >= 154 ) then 
             -- Phase 5: Sunwell Plateau T6.5 (ilvl 154-164)
             Table = GS_Formula["TBC_SUNWELL"]
@@ -115,11 +115,9 @@ function GearScore_GetItemScore(ItemLink)
         else 
             -- Pre-TBC items use basic formula
             Table = GS_Formula["B"] 
-        end
-		if ( ItemRarity >= 2 ) and ( ItemRarity <= 4 )then
+        end		if ( ItemRarity >= 2 ) and ( ItemRarity <= 4 )then
             local Red, Green, Blue = GearScore_GetQuality((floor(((ItemLevel - Table[ItemRarity].A) / Table[ItemRarity].B) * 1 * Scale)) * 11.25 )
             GearScore = floor(((ItemLevel - Table[ItemRarity].A) / Table[ItemRarity].B) * GS_ItemTypes[ItemEquipLoc].SlotMOD * Scale * QualityScale)
-			if ( ItemLevel == 187.05 ) then ItemLevel = 0; end
 			if ( GearScore < 0 ) then GearScore = 0;   Red, Green, Blue = GearScore_GetQuality(1); end
 			if ( PVPScale == 0.75 ) then PVPScore = 1; GearScore = GearScore * 1; 
 			else PVPScore = GearScore * 0; end
