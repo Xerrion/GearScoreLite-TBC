@@ -71,8 +71,7 @@ jobs:
           echo "❌ Interface version should be 30300 for TBC compatibility"
           exit 1
         fi
-        
-        echo "✅ TOC file validation passed"
+          echo "✅ TOC file validation passed"
         
     - name: Validate Lua syntax
       run: |
@@ -82,18 +81,29 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y lua5.1
         
-        lua_files=($(find . -name "*.lua" -type f))
+        # Find all Lua files, excluding our syntax check helper files
+        lua_files=($(find . -name "*.lua" -type f ! -name "*_SyntaxCheck.lua" ! -name "wow_api_stubs.lua"))
+        
+        SYNTAX_ERRORS=0
         
         for file in "${lua_files[@]}"; do
           echo "Checking syntax: $file"
-          if lua5.1 -l "$file" 2>/dev/null; then
+          
+          # Use loadfile() for syntax-only checking (doesn't execute or require WoW APIs)
+          if lua5.1 -e "local f, err = loadfile('$file'); if not f then print('❌ Syntax error: ' .. err); os.exit(1) else print('✓ Syntax OK') end" 2>/dev/null; then
             echo "✓ Syntax OK: $file"
           else
             echo "❌ Syntax error in: $file"
-            lua5.1 -l "$file"
-            exit 1
+            # Show the actual error
+            lua5.1 -e "local f, err = loadfile('$file'); if not f then print('Error details: ' .. err) end"
+            SYNTAX_ERRORS=1
           fi
         done
+        
+        if [ $SYNTAX_ERRORS -eq 1 ]; then
+          echo "❌ Lua syntax validation failed"
+          exit 1
+        fi
         
         echo "✅ All Lua files have valid syntax"
         
