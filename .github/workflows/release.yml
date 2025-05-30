@@ -114,9 +114,7 @@ jobs:
         ---
         ## 📜 Changelog Highlights
         
-        \'\'\'markdown
         $CHANGELOG_CONTENT
-        \'\'\'
         ---
         
         ## 📥 Installation
