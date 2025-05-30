@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 TBC Edition Documentation
+    url: https://github.com/your-repo/gearscorelite-tbc/blob/master/README.md
+    about: Read the comprehensive guide for GearScoreLite TBC Edition
+  - name: 💬 Community Discussion
+    url: https://github.com/your-repo/gearscorelite-tbc/discussions
+    about: Ask questions and discuss features with the community
+  - name: 🎯 Original GearScoreLite
+    url: https://github.com/dyzcypul/GearScore-Lite
+    about: For issues with the original WotLK version

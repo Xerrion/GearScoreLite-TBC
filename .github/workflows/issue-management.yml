@@ -1,0 +1,110 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  triage-issue:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    
+    steps:
+    - name: Add initial labels
+      uses: github/issue-labeler@v3.2
+      with:
+        configuration-path: .github/issue-labeler.yml
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Add welcome comment
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        body: |
+          👋 Thanks for opening an issue for **GearScoreLite TBC Edition**!
+          
+          ## 🛠️ Before we investigate
+          
+          Please make sure you've provided:
+          
+          - [ ] **WoW Client Version** (should be 3.3.5a)
+          - [ ] **Server Type** (TBC content server)
+          - [ ] **Addon Version** (check `/gs` command)
+          - [ ] **Specific item examples** (item name + item level)
+          - [ ] **Expected vs actual scores**
+          
+          ## 🎯 TBC Edition Features
+          
+          This version is specifically optimized for:
+          - **TBC content** (T4, T5, T6, Sunwell)
+          - **Item levels 85-151**
+          - **WotLK client** (3.3.5a) running TBC servers
+          
+          ## 🐛 Common Issues
+          
+          - **Low scores for TBC items**: Make sure you're using TBC Edition, not original
+          - **Missing tooltip scores**: Try `/gs item` to toggle
+          - **Player scores not showing**: Try `/gs player` to enable
+          
+          A maintainer will review your issue soon. Thanks for helping improve the addon! 🙂
+
+  auto-close-resolved:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.action == 'created' && 
+      contains(github.event.comment.body, 'resolved') &&
+      github.event.comment.user.login == github.event.issue.user.login
+      
+    steps:
+    - name: Close resolved issue
+      uses: peter-evans/close-issue@v3
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        comment: |
+          🎉 Automatically closing this issue as the original poster indicated it's resolved.
+          
+          If you need further assistance, feel free to open a new issue!
+
+  label-bug-reports:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.action == 'opened' &&
+      (contains(github.event.issue.title, 'bug') || 
+       contains(github.event.issue.title, 'error') ||
+       contains(github.event.issue.title, 'issue') ||
+       contains(github.event.issue.body, 'not working'))
+       
+    steps:
+    - name: Add bug label
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            labels: ['bug', 'triage-needed']
+          })
+
+  label-feature-requests:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.action == 'opened' &&
+      (contains(github.event.issue.title, 'feature') || 
+       contains(github.event.issue.title, 'enhancement') ||
+       contains(github.event.issue.title, 'request') ||
+       contains(github.event.issue.body, 'would like'))
+       
+    steps:
+    - name: Add enhancement label
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            labels: ['enhancement', 'triage-needed']
+          })

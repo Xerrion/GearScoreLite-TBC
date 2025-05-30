@@ -12,17 +12,19 @@ MAJOR CHANGES:
 - Fixed TBC Best in Slot items being scored lower than inferior items
 
 NEW FEATURES:
-- Four-tier TBC scoring system:
-  * TBC_HIGH: Sunwell Plateau items (ilvl 141-151)
-  * TBC_T6: T6 raid content items (ilvl 120-140)
-  * TBC: T5 raid content items (ilvl 100-133)  
-  * TBC_LOW: T4 & Heroic content items (ilvl 85-99)
+- Six-tier TBC scoring system:
+  * TBC_SUNWELL: Sunwell Plateau T6.5 items (ilvl 154-164)
+  * TBC_T6: Mount Hyjal, Black Temple T6 items (ilvl 141-151)
+  * TBC_T5: SSC, Tempest Keep T5 + Zul'Aman, Badge Gear (ilvl 128-141)  
+  * TBC_T4: Karazhan, Gruul, Magtheridon T4 items (ilvl 110-120)
+  * TBC_PRE_RAID: Heroics, Crafted, Reputations (ilvl 105-115)
+  * Formula "B": Pre-TBC content (ilvl <105)
 - Optimized formula coefficients for TBC itemization patterns
 - Removed Titan's Grip penalties (WotLK feature not relevant to TBC)
 
 TECHNICAL IMPROVEMENTS:
-- Updated item level thresholds to accurate TBC ranges (T5: 100-133, T6: 120-151)
-- Created four TBC-specific scoring formulas with appropriate coefficients
+- Updated item level thresholds to accurate TBC phase ranges
+- Created six TBC-specific scoring formulas with appropriate coefficients
 - Preserved hunter weapon/ranged scoring modifiers for TBC gameplay
 - Maintained enchant penalty system for missing enchants
 

@@ -1,0 +1,38 @@
+bug:
+  - "bug"
+  - "error" 
+  - "issue"
+  - "not working"
+  - "broken"
+  - "crash"
+
+enhancement:
+  - "feature"
+  - "enhancement"
+  - "request"
+  - "suggestion"
+  - "improve"
+
+question:
+  - "question"
+  - "help"
+  - "how to"
+  - "documentation"
+
+tbc-scoring:
+  - "scoring"
+  - "score"
+  - "formula"
+  - "calculation"
+  - "tier"
+  - "sunwell"
+  - "t6"
+  - "t5"
+  - "t4"
+
+compatibility:
+  - "compatibility"
+  - "client"
+  - "server"
+  - "version"
+  - "3.3.5"
