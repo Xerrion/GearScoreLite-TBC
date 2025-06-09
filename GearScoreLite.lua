@@ -25,10 +25,19 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
 				GS_Sender, theirVersion, myVersion))
 		end
 		return
-	end
-	-- Auto-share version when group roster changes
+	end	-- Auto-share version when group roster changes
 	if ( GS_EventName == "GROUP_ROSTER_UPDATE" ) then
 		GearScore_SendVersion()
+		return
+	end
+	-- Version check when entering world
+	if ( GS_EventName == "PLAYER_ENTERING_WORLD" ) then
+		GearScore_OnWorldEnter()
+		return
+	end
+	-- Version check when targeting other players
+	if ( GS_EventName == "PLAYER_TARGET_CHANGED" ) then
+		GearScore_OnTargetChanged()
 		return
 	end
 	if ( GS_EventName == "PLAYER_EQUIPMENT_CHANGED" ) then
@@ -40,6 +49,9 @@ function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_
       		if not ( GS_Settings ) then	GS_Settings = GS_DefaultSettings end
 			if not ( GS_Data ) then GS_Data = {}; end; if not ( GS_Data[GetRealmName()] ) then GS_Data[GetRealmName()] = { ["Players"] = {} }; end
   			for i, v in pairs(GS_DefaultSettings) do if not ( GS_Settings[i] ) then GS_Settings[i] = GS_DefaultSettings[i]; end; end
+  			-- Initialize session tracking variables
+  			GS_WelcomeShown = false
+  			GS_TargetVersionRequests = {}
   			-- Check version age on load
   			GearScore_CheckVersionAge()
         end
@@ -88,7 +100,7 @@ function GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc)
 	local ItemSubStringTable = {}
 
 	for v in string.gmatch(ItemSubString, "[^:]+") do tinsert(ItemSubStringTable, v); end
-	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3], ItemSubStringTable[2]
+	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3]
 	local StringStart, StringEnd = string.find(ItemSubString, ":") 
 	ItemSubString = string.sub(ItemSubString, StringStart + 1)
 	if ( ItemSubString == "0" ) and ( GS_ItemTypes[ItemEquipLoc]["Enchantable"] )then
@@ -287,6 +299,8 @@ f:RegisterEvent("PLAYER_REGEN_ENABLED")
 f:RegisterEvent("PLAYER_REGEN_DISABLED")
 f:RegisterEvent("CHAT_MSG_ADDON")
 f:RegisterEvent("GROUP_ROSTER_UPDATE")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:RegisterEvent("PLAYER_TARGET_CHANGED")
 
 -- Register addon message prefix for version checking
 RegisterAddonMessagePrefix(GS_VersionInfo.MessagePrefix)
@@ -363,6 +377,39 @@ function GearScore_CheckVersionAge()
 			print("|cFFFFAA00[GearScore TBC]|r Your version is " .. 
 				  math.floor(daysSinceRelease) .. " days old.")
 			print("|cFFFFAA00Consider checking for updates!|r")
+		end
+	end
+end
+
+-- Handle entering world - welcome message and version check
+function GearScore_OnWorldEnter()
+	-- Show welcome message with version info (only once per session)
+	if not GS_WelcomeShown then
+		print("|cFF00FF00[GearScore TBC]|r Welcome! Version " .. GS_VersionInfo.Version .. " loaded.")
+		print("|cFFFFFFFFType |cFFFFAA00/gs version|r for build details or |cFFFFAA00/gs vcheck|r to share with group.")
+		GS_WelcomeShown = true
+		
+		-- Check version age
+		GearScore_CheckVersionAge()
+	end
+	
+	-- Auto-share version if in group
+	GearScore_SendVersion()
+end
+
+-- Handle target changes - request version from targeted players
+function GearScore_OnTargetChanged()
+	local targetName = UnitName("target")
+	if targetName and UnitIsPlayer("target") and not UnitIsUnit("target", "player") then
+		-- Only request version once per target per session
+		if not GS_TargetVersionRequests then
+			GS_TargetVersionRequests = {}
+		end
+		
+		if not GS_TargetVersionRequests[targetName] then
+			-- Send version request (they'll auto-respond if they have GearScore TBC)
+			GearScore_SendVersion()
+			GS_TargetVersionRequests[targetName] = true
 		end
 	end
 end
