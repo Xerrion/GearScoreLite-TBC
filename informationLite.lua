@@ -91,9 +91,8 @@ GS_Formula = {
 		[4] = { ["A"] = 70.0000, ["B"] = 0.5000 }, -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear (ilvl 128-141)
 		[3] = { ["A"] = 60.0000, ["B"] = 0.6500 },
 		[2] = { ["A"] = 50.0000, ["B"] = 0.8000 }
-	},
-	["TBC_T4"] = {
-		[4] = { ["A"] = 55.0000, ["B"] = 0.6500 }, -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+	},	["TBC_T4"] = {
+		[4] = { ["A"] = 55.0000, ["B"] = 0.6500 }, -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-127)
 		[3] = { ["A"] = 45.0000, ["B"] = 0.8000 },
 		[2] = { ["A"] = 35.0000, ["B"] = 0.9500 }
 	},

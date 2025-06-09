@@ -102,12 +102,11 @@ function GearScore_GetItemScore(ItemLink)
             Table = GS_Formula["TBC_SUNWELL"]
         elseif ( ItemLevel >= 141 ) then
             -- Phase 3: Mount Hyjal, Black Temple T6 (ilvl 141-151)
-            Table = GS_Formula["TBC_T6"]
-        elseif ( ItemLevel >= 128 ) then
+            Table = GS_Formula["TBC_T6"]        elseif ( ItemLevel >= 128 ) then
             -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear (ilvl 128-141)
             Table = GS_Formula["TBC_T5"]
         elseif ( ItemLevel >= 110 ) then
-            -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+            -- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-127)
             Table = GS_Formula["TBC_T4"]
         elseif ( ItemLevel >= 105 ) then
             -- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
