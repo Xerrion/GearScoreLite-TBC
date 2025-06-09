@@ -19,6 +19,8 @@
         "SlashCmdList",
         "ShoppingTooltip1",
         "ShoppingTooltip2",
-        "ItemRefTooltip"
+        "ItemRefTooltip",
+        "GameTooltip",
+        "UIParent"
     ]
 }
