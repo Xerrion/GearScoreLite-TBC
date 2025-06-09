@@ -29,7 +29,7 @@ The original GearScoreLite was designed for WotLK and used item level thresholds
 | **TBC_SUNWELL** | 154-164 | Phase 5: Sunwell Plateau T6.5 | Sunwell raid gear |
 | **TBC_T6** | 141-151 | Phase 3: Mount Hyjal, Black Temple T6 | T6 raid gear |  
 | **TBC_T5** | 128-141 | Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman | T5 raids, Zul'Aman, Badge gear |
-| **TBC_T4** | 110-120 | Phase 1: Karazhan, Gruul, Magtheridon T4 | T4 raid gear |
+| **TBC_T4** | 110-127 | Phase 1: Karazhan, Gruul, Magtheridon T4 | T4 raid gear |
 | **TBC_PRE_RAID** | 105-115 | Pre-Raid: Heroics, Crafted, Reputations | Heroic dungeons, crafted items |
 | **Formula "B"** | <105 | Pre-TBC content | Leveling gear, vanilla content |
 
@@ -81,7 +81,7 @@ TBC_T6: A = 80.0, B = 0.45
 -- Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman (ilvl 128-141)
 TBC_T5: A = 70.0, B = 0.50
 
--- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-120)
+-- Phase 1: Karazhan, Gruul, Magtheridon T4 (ilvl 110-127)
 TBC_T4: A = 55.0, B = 0.65
 
 -- Pre-Raid: Heroics, Crafted, Reputations (ilvl 105-115)
