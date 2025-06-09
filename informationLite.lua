@@ -1,5 +1,3 @@
-
-
 GS_ItemTypes = {
 	["INVTYPE_RELIC"] = { ["SlotMOD"] = 0.3164, ["ItemSlot"] = 18, ["Enchantable"] = false},
 	["INVTYPE_TRINKET"] = { ["SlotMOD"] = 0.5625, ["ItemSlot"] = 33, ["Enchantable"] = false },
@@ -151,8 +149,19 @@ GS_CommandList = {
 	[4] = "/gs level -> Toggles iLevel information.",
 	[5] = "/gs reset --> Resets GearScore's Options back to Default.",
 	[6] = "/gs compare --> Toggles display of comparative info between you and your target's GearScore.",
-	[7] = "Note: Optimized for TBC content on WotLK client",
+	[7] = "/gs version -> Shows addon version and build information.",
+	[8] = "/gs vcheck -> Broadcasts your version to group members.",
+	[9] = "Note: Optimized for TBC content on WotLK client",
 }
 
 GS_ShowSwitch = {[0] = 2,[1] = 3,[2] = 0,[3] = 1}
 GS_ItemSwitch = {[0] = 3,[1] = 2,[2] = 1,[3] = 0}
+
+-- Version Information for TBC Edition
+GS_VersionInfo = {
+	["Version"] = "4.0.4-TBC",
+	["ReleaseDate"] = "2025-06-09",
+	["Build"] = "TBC-Pure", 
+	["Compatibility"] = "3.3.5a-TBC",
+	["MessagePrefix"] = "GS_TBC_VER"
+}
