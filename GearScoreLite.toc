@@ -1,8 +1,13 @@
 ## Interface: 30300
 ## Title: GearScoreLite TBC Edition
 ## Notes: TBC-optimized gear scoring for TBC content on WotLK client. Properly scores TBC BiS items.
-## Version: 4.0.1-TBC
+## Version: 4.0.4-TBC
+## X-Date: 2025-06-09
+## X-Build: TBC-Pure
+## X-Compatibility: 3.3.5a-TBC
+## X-Category: Combat
 ## Author: Mirrikat45, dyzcypul | TBC Adaptation: Xerrion
+## X-Original-Authors: Mirrikat45, dyzcypul
 ## SavedVariables: GS_Settings
 
 informationLite.lua

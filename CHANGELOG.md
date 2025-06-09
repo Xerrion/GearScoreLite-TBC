@@ -1,8 +1,8 @@
 GearScoreLite TBC Edition - Changelog
 ======================================
 
-Version 4.0.4-TBC (T4/T5 Scoring Fix + Version Checker)
---------------------------------------------------------
+Version 4.0.4-TBC (T4/T5 Scoring Fix)
+-------------------------------------
 CRITICAL FIX:
 - 🔧 **FIXED: T4/T5 Scoring Inversion Issue**
   * Extended T4 item level range from 110-120 to 110-127
@@ -12,14 +12,6 @@ CRITICAL FIX:
 - 📋 **UPDATED: Documentation**
   * All files updated to reflect corrected T4 range (110-127)
   * README.md, README-TBC.txt, and formula comments synchronized
-
-NEW FEATURE:
-- ✨ **ADDED: Version Checker System**
-  * Automatic version detection when joining groups/guilds
-  * In-game compatibility checking with other GearScore TBC users
-  * Version age warnings for outdated installations (90+ days)
-  * New slash commands: /gs version, /gs vcheck
-  * Enhanced TOC metadata with build information
 
 TECHNICAL DETAILS:
 - **Root Cause**: Gap between T4 (110-119) and T5 (128+) caused ilvl 120-127 items to be improperly categorized

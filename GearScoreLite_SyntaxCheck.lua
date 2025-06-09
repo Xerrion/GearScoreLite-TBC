@@ -182,7 +182,7 @@ function GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc)
 	local ItemSubStringTable = {}
 
 	for v in string.gmatch(ItemSubString, "[^:]+") do tinsert(ItemSubStringTable, v); end
-	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3], ItemSubStringTable[2]
+	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3]
 	local StringStart, StringEnd = string.find(ItemSubString, ":") 
 	ItemSubString = string.sub(ItemSubString, StringStart + 1)
 	if ( ItemSubString == "0" ) and ( GS_ItemTypes[ItemEquipLoc]["Enchantable"] )then

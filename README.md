@@ -59,6 +59,8 @@ All original commands work exactly the same:
 /gs item         - Toggle item score tooltips  
 /gs level        - Toggle item level display
 /gs compare      - Toggle score comparisons
+/gs version      - Show addon version & build info
+/gs vcheck       - Broadcast version to group members
 ```
 
 ### Features
@@ -67,6 +69,8 @@ All original commands work exactly the same:
 - **Character sheet** displays your current gear score
 - **Hunter weapon scaling** preserved for TBC gameplay (5.3224x ranged, 0.3164x melee)
 - **Enchant penalties** for missing enchants
+- **Version checking** automatically detects compatibility with other users
+- **Age warnings** for outdated addon versions (90+ days old)
 
 ## 🔧 Technical Details
 
@@ -129,21 +133,6 @@ Perfect for **TBC content servers** running on the **WotLK client architecture**
 
 - **Original Authors**: Mirrikat45, dyzcypul
 - **TBC Adaptation**: Xerrion
-
-## 📝 Changelog
-
-### Version 4.0.3-TBC (Pure TBC Cleanup)
-- 🧹 **Complete WotLK removal** - Eliminated all heirloom calculations
-- 🔄 **Synchronized codebase** - Consistent 6-tier system across all files
-- 🗂️ **Clean file structure** - Removed legacy DKP/tooltip/version systems
-- ✅ **Code quality** - Zero WotLK contamination, pure TBC focus
-
-### Version 4.0.2-TBC (TBC Adaptation)
-- ✨ **Six-tier TBC optimization** - Complete TBC progression system
-- 🔧 **Fixed TBC BiS scoring** - No more undervalued items  
-- 🚫 **Removed WotLK features** - Titan's Grip, WotLK thresholds
-- 📊 **Accurate TBC ranges** - Proper phase-based item level brackets
-- 🎯 **TBC-specific formulas** - Optimized coefficients for all TBC tiers
 
 ## 🐛 Issues & Support
 

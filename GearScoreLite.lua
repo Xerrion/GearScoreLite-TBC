@@ -1,4 +1,3 @@
-
 -------------------------------------------------------------------------------
 --                        GearScoreLite TBC Edition                          --
 --                             Version 3x04-TBC                              --
@@ -17,16 +16,44 @@
 function GearScore_OnEvent(GS_Nil, GS_EventName, GS_Prefix, GS_AddonMessage, GS_Whisper, GS_Sender)
 	if ( GS_EventName == "PLAYER_REGEN_ENABLED" ) then GS_PlayerIsInCombat = false; return; end
 	if ( GS_EventName == "PLAYER_REGEN_DISABLED" ) then GS_PlayerIsInCombat = true; return; end
+	-- Version checking via addon messages
+	if ( GS_EventName == "CHAT_MSG_ADDON" ) and ( GS_Prefix == GS_VersionInfo.MessagePrefix ) then
+		local theirVersion = GS_AddonMessage
+		local myVersion = GS_VersionInfo.Version
+		if theirVersion ~= myVersion then
+			print(string.format("|cFF00FF00[GearScore TBC]|r %s has version |cFFFFAA00%s|r (you have |cFFFFAA00%s|r)", 
+				GS_Sender, theirVersion, myVersion))
+		end
+		return
+	end	-- Auto-share version when group roster changes
+	if ( GS_EventName == "GROUP_ROSTER_UPDATE" ) then
+		GearScore_SendVersion()
+		return
+	end
+	-- Version check when entering world
+	if ( GS_EventName == "PLAYER_ENTERING_WORLD" ) then
+		GearScore_OnWorldEnter()
+		return
+	end
+	-- Version check when targeting other players
+	if ( GS_EventName == "PLAYER_TARGET_CHANGED" ) then
+		GearScore_OnTargetChanged()
+		return
+	end
 	if ( GS_EventName == "PLAYER_EQUIPMENT_CHANGED" ) then
 	    local MyGearScore = GearScore_GetScore(UnitName("player"), "player");
 		local Red, Blue, Green = GearScore_GetQuality(MyGearScore)
     	PersonalGearScore:SetText(MyGearScore); PersonalGearScore:SetTextColor(Red, Green, Blue, 1)
-  	end
-	if ( GS_EventName == "ADDON_LOADED" ) then
+  	end	if ( GS_EventName == "ADDON_LOADED" ) then
 		if ( GS_Prefix == "GearScoreLite" ) then
       		if not ( GS_Settings ) then	GS_Settings = GS_DefaultSettings end
 			if not ( GS_Data ) then GS_Data = {}; end; if not ( GS_Data[GetRealmName()] ) then GS_Data[GetRealmName()] = { ["Players"] = {} }; end
   			for i, v in pairs(GS_DefaultSettings) do if not ( GS_Settings[i] ) then GS_Settings[i] = GS_DefaultSettings[i]; end; end
+  			-- Initialize session tracking variables
+  			GS_WelcomeShown = false
+  			GS_TargetVersionRequests = {}
+  			-- Check version age on load
+  			GearScore_CheckVersionAge()
         end
 	end
 end
@@ -73,7 +100,7 @@ function GearScore_GetEnchantInfo(ItemLink, ItemEquipLoc)
 	local ItemSubStringTable = {}
 
 	for v in string.gmatch(ItemSubString, "[^:]+") do tinsert(ItemSubStringTable, v); end
-	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3], ItemSubStringTable[2]
+	ItemSubString = ItemSubStringTable[2]..":"..ItemSubStringTable[3]
 	local StringStart, StringEnd = string.find(ItemSubString, ":") 
 	ItemSubString = string.sub(ItemSubString, StringStart + 1)
 	if ( ItemSubString == "0" ) and ( GS_ItemTypes[ItemEquipLoc]["Enchantable"] )then
@@ -250,11 +277,14 @@ end
 ---------------GS-SPAM Slasch Command--------------------------------------
 function GS_MANSET(Command)
 	if ( strlower(Command) == "" ) or ( strlower(Command) == "options" ) or ( strlower(Command) == "option" ) or ( strlower(Command) == "help" ) then for i,v in ipairs(GS_CommandList) do print(v); end; return end
+	if ( strlower(Command) == "reset" ) then GS_Settings = GS_DefaultSettings; print("GearScore: Options Reset"); return; end
 	if ( strlower(Command) == "show" ) then GS_Settings["Player"] = GS_ShowSwitch[GS_Settings["Player"]]; if ( GS_Settings["Player"] == 1 ) or ( GS_Settings["Player"] == 2 ) then print("Player Scores: On"); else print("Player Scores: Off"); end; return; end
 	if ( strlower(Command) == "player" ) then GS_Settings["Player"] = GS_ShowSwitch[GS_Settings["Player"]]; if ( GS_Settings["Player"] == 1 ) or ( GS_Settings["Player"] == 2 ) then print("Player Scores: On"); else print("Player Scores: Off"); end; return; end
     if ( strlower(Command) == "item" ) then GS_Settings["Item"] = GS_ItemSwitch[GS_Settings["Item"]]; if ( GS_Settings["Item"] == 1 ) or ( GS_Settings["Item"] == 3 ) then print("Item Scores: On"); else print("Item Scores: Off"); end; return; end
-	if ( strlower(Command) == "level" ) then GS_Settings["Level"] = GS_Settings["Level"] * -1; if ( GS_Settings["Level"] == 1 ) then print ("Item Levels: On"); else print ("Item Levels: Off"); end; return; end
-	if ( strlower(Command) == "compare" ) then GS_Settings["Compare"] = GS_Settings["Compare"] * -1; if ( GS_Settings["Compare"] == 1 ) then print ("Comparisons: On"); else print ("Comparisons: Off"); end; return; end
+	if ( strlower(Command) == "level" ) then GS_Settings["Level"] = GS_Settings["Level"] * -1; if ( GS_Settings["Level"] == 1 ) then print ("Item Levels: On"); else print ("Item Levels: Off"); end; return; end	if ( strlower(Command) == "compare" ) then GS_Settings["Compare"] = GS_Settings["Compare"] * -1; if ( GS_Settings["Compare"] == 1 ) then print ("Comparisons: On"); else print ("Comparisons: Off"); end; return; end
+	-- Version checking commands
+	if ( strlower(Command) == "version" ) or ( strlower(Command) == "ver" ) or ( strlower(Command) == "info" ) then GearScore_VersionCommand(); return; end
+	if ( strlower(Command) == "vcheck" ) or ( strlower(Command) == "checkver" ) then GearScore_SendVersion(); print("|cFF00FF00[GearScore TBC]|r Version broadcast to group members"); return; end
 	print("GearScore: Unknown Command. Type '/gs' for a list of options")
 end
 
@@ -267,6 +297,13 @@ f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_REGEN_ENABLED")
 f:RegisterEvent("PLAYER_REGEN_DISABLED")
+f:RegisterEvent("CHAT_MSG_ADDON")
+f:RegisterEvent("GROUP_ROSTER_UPDATE")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:RegisterEvent("PLAYER_TARGET_CHANGED")
+
+-- Register addon message prefix for version checking
+RegisterAddonMessagePrefix(GS_VersionInfo.MessagePrefix)
 GameTooltip:HookScript("OnTooltipSetUnit", GearScore_HookSetUnit)
 GameTooltip:HookScript("OnTooltipSetItem", GearScore_HookSetItem)
 ShoppingTooltip1:HookScript("OnTooltipSetItem", GearScore_HookCompareItem)
@@ -291,4 +328,91 @@ SlashCmdList["MY2SCRIPT"] = GS_MANSET
 SLASH_MY2SCRIPT1 = "/gset"
 SLASH_MY2SCRIPT2 = "/gs"
 SLASH_MY2SCRIPT3 = "/gearscore"
+
+-------------------------------------------------------------------------------
+--                           Version Checking System                        --
+-------------------------------------------------------------------------------
+
+-- Send version to party/guild members
+function GearScore_SendVersion()
+	local version = GS_VersionInfo.Version
+	local prefix = GS_VersionInfo.MessagePrefix
+	
+	if IsInGroup() then
+		SendAddonMessage(prefix, version, "PARTY")
+	elseif IsInGuild() then
+		SendAddonMessage(prefix, version, "GUILD")
+	end
+end
+
+-- Version command handler
+function GearScore_VersionCommand()
+	local tocVersion = GetAddOnMetadata("GearScoreLite", "Version") or "Unknown"
+	local buildDate = GetAddOnMetadata("GearScoreLite", "X-Date") or "Unknown" 
+	local buildType = GetAddOnMetadata("GearScoreLite", "X-Build") or "Unknown"
+	local compatibility = GetAddOnMetadata("GearScoreLite", "X-Compatibility") or "Unknown"
+	
+	print("|cFF00FF00=== GearScore TBC Edition ===|r")
+	print("|cFFFFFFFFVersion:|r " .. tocVersion)
+	print("|cFFFFFFFFBuild Date:|r " .. buildDate)
+	print("|cFFFFFFFFBuild Type:|r " .. buildType)
+	print("|cFFFFFFFFCompatible:|r " .. compatibility)
+	print("|cFFFFFFFFType:|r Pure TBC Edition (No WotLK)")
+	print("|cFFFFAA00Tip:|r Use |cFFFFFFFF/gs compare|r with guildmates to check compatibility")
+	
+	-- Auto-send version to current group
+	GearScore_SendVersion()
+end
+
+-- Check if addon version is getting old (90+ days)
+function GearScore_CheckVersionAge()
+	local releaseDate = GS_VersionInfo.ReleaseDate
+	local year, month, day = releaseDate:match("(%d+)-(%d+)-(%d+)")
+	if year and month and day then
+		local releaseTime = time({year=tonumber(year), month=tonumber(month), day=tonumber(day)})
+		local currentTime = time()
+		local daysSinceRelease = (currentTime - releaseTime) / (24 * 60 * 60)
+		
+		if daysSinceRelease > 90 then
+			print("|cFFFFAA00[GearScore TBC]|r Your version is " .. 
+				  math.floor(daysSinceRelease) .. " days old.")
+			print("|cFFFFAA00Consider checking for updates!|r")
+		end
+	end
+end
+
+-- Handle entering world - welcome message and version check
+function GearScore_OnWorldEnter()
+	-- Show welcome message with version info (only once per session)
+	if not GS_WelcomeShown then
+		print("|cFF00FF00[GearScore TBC]|r Welcome! Version " .. GS_VersionInfo.Version .. " loaded.")
+		print("|cFFFFFFFFType |cFFFFAA00/gs version|r for build details or |cFFFFAA00/gs vcheck|r to share with group.")
+		GS_WelcomeShown = true
+		
+		-- Check version age
+		GearScore_CheckVersionAge()
+	end
+	
+	-- Auto-share version if in group
+	GearScore_SendVersion()
+end
+
+-- Handle target changes - request version from targeted players
+function GearScore_OnTargetChanged()
+	local targetName = UnitName("target")
+	if targetName and UnitIsPlayer("target") and not UnitIsUnit("target", "player") then
+		-- Only request version once per target per session
+		if not GS_TargetVersionRequests then
+			GS_TargetVersionRequests = {}
+		end
+		
+		if not GS_TargetVersionRequests[targetName] then
+			-- Send version request (they'll auto-respond if they have GearScore TBC)
+			GearScore_SendVersion()
+			GS_TargetVersionRequests[targetName] = true
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
 
