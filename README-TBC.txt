@@ -15,7 +15,7 @@ SCORING TIERS:
 - TBC_SUNWELL (154-164 ilvl): Phase 5: Sunwell Plateau T6.5
 - TBC_T6 (141-151 ilvl): Phase 3: Mount Hyjal, Black Temple T6
 - TBC_T5 (128-141 ilvl): Phase 2: SSC, Tempest Keep T5 + Phase 4: Zul'Aman, Badge Gear
-- TBC_T4 (110-120 ilvl): Phase 1: Karazhan, Gruul, Magtheridon T4
+- TBC_T4 (110-127 ilvl): Phase 1: Karazhan, Gruul, Magtheridon T4
 - TBC_PRE_RAID (105-115 ilvl): Pre-Raid: Heroics, Crafted, Reputations
 - Formula "B" (<105 ilvl): Pre-TBC content
 
