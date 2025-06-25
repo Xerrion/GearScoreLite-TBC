@@ -68,7 +68,7 @@ jobs:
         cp *.toc release/GearScoreLite/
         cp README.md release/GearScoreLite/
         cp README-TBC.txt release/GearScoreLite/
-        cp TBC-CHANGELOG.txt release/GearScoreLite/
+        cp CHANGELOG.md release/GearScoreLite/
         
         # Create addon zip
         cd release
@@ -80,69 +80,31 @@ jobs:
     - name: Generate release notes
       id: release_notes
       run: |
-        # Get current date for release notes
-        RELEASE_DATE=$(date +'%B %d, %Y')
+        VERSION_CLEAN="${{ steps.version.outputs.version_clean }}"
 
-        # Dynamically read TBC-CHANGELOG.txt for recent changes
-        CHANGELOG_CONTENT=$(cat TBC-CHANGELOG.txt)
+        # Extract only the changelog section for the current version from CHANGELOG.md
+        CHANGELOG_CONTENT=$(awk -v ver="$VERSION_CLEAN" '
+          /^## Version / {
+            if (found) exit;               # Stop when we hit the next version header after finding our target
+            if ($0 ~ "^## Version " ver) {
+              found=1; next;               # Start capturing after the header line
+            }
+          }
+          found { print }
+        ' CHANGELOG.md)
+
+        # Fallback message if no changelog section is found
+        if [ -z "$CHANGELOG_CONTENT" ]; then
+          CHANGELOG_CONTENT="No changelog entry found for version $VERSION_CLEAN."
+        fi
 
         cat > release_notes.md << EOF
-        **Release Date:** $RELEASE_DATE
-        
-        ## 🎯 What's New
-        
-        A specialized version of GearScoreLite optimized for **The Burning Crusade (TBC) content** running on WotLK client (3.3.5a). This release incorporates the latest updates and fixes.
-        
-        ### ✨ Key Features
-        - **Six-tier TBC scoring system** for accurate phase progression
-        - **Fixed TBC BiS scoring** - No more undervalued items
-        - **Significant score improvement** for all TBC items based on their tier
-        - **Proper tier progression**: Pre-Raid → T4 → T5 → T6 → Sunwell → Pre-TBC
-        
-        ### 📊 Scoring Tiers (ilvl ranges)
-        | Tier             | Item Level | Content Examples                               |
-        |------------------|------------|------------------------------------------------|
-        | **TBC_SUNWELL**  | 154-164    | Phase 5: Sunwell Plateau T6.5                  |
-        | **TBC_T6**       | 141-151    | Phase 3: Mount Hyjal, Black Temple T6          |  
-        | **TBC_T5**       | 128-141    | Phase 2: SSC, TK T5 + Phase 4: Zul\'Aman       |
-        | **TBC_T4**       | 110-120    | Phase 1: Karazhan, Gruul, Magtheridon T4       |
-        | **TBC_PRE_RAID** | 105-115    | Pre-Raid: Heroics, Crafted, Reputations        |
-        | **Formula "B"**  | <105       | Pre-TBC content (Leveling, Vanilla)            |
+        # GearScoreLite TBC Edition – v$VERSION_CLEAN
 
-        ---
-        ## 📜 Changelog Highlights
-        
         $CHANGELOG_CONTENT
-        ---
-        
-        ## 📥 Installation
-        
-        1. **Download** `GearScoreLite-TBC-${{ steps.version.outputs.version_clean }}.zip`
-        2. **Extract** to your `Interface/AddOns/` folder
-        3. **Restart** WoW client
-        4. **Enjoy** properly scored TBC gear!
-        
-        ## 🎮 Usage
-        
-        All original commands work:
-        - `/gs` - Show options menu
-        - `/gs player` - Toggle player score display
-        - `/gs item` - Toggle item tooltips
-        
-        ## 🔧 Compatibility
-        
-        - **Client**: WoW 3.3.5a (WotLK client)
-        - **Content**: TBC expansion servers
-        - **Interface**: 30300 (Set in GearScoreLite.toc)
-        
-        ---
-        
-        ### 👥 Credits
-        - **Original Authors**: Mirrikat45, dyzcypul
-        - **TBC Adaptation**: Xerrion
         EOF
-        
-        echo "Generated release notes"
+
+        echo "Generated release notes for version $VERSION_CLEAN"
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
